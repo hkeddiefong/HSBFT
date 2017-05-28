@@ -17,19 +17,24 @@
 <script type="text/javascript" src="http://static.fusioncharts.com/code/latest/fusioncharts.js"></script>
 -->
 
+<script type="text/javascript">
+        function summarize()
+        {
+			<?php echo shell_exec("java -jar KNN.jar Combined.csv targetData.csv test"); ?>
+        }
+</script>
 
 <script>
+	var dataset =[
+		["Australia",5,3,5,2,4,3,5,3,4,3,3,3,4,3,0],
+		["Canada",4,3,5,2,3,3,2,3,4,3,3,3,4,3,0],
+	];
 	
 	var calculate = function(){
 		//alert("START calculate")
 		
-		// get database
-		//write target
-		
-		<?php 
-			$output = shell_exec("java -jar KNN.jar Combined.csv targetData.csv test"); 
-			$output_array = explode("\n", $output);
-		?>
+		target = -1;
+		min = 999999;
 		
 		$( document ).ready(function() {
 			
@@ -44,8 +49,10 @@
 	}
 
 	var drawchart = function(){
-		
+		//alert("start draw")
+		//alert("go cal")
 		calculate();
+		//alert("back to draw")
 		
 		var a ={
 			'type': 'radar',
@@ -55,10 +62,10 @@
 			'dataFormat': 'json',
 			'dataSource': {
 				"chart": {
-					"caption": "Result for your reference",
-					"subCaption": "Probability of the financial crime activities (%)",
+					"caption": "Result",
+					"subCaption": "for your reference",
 					"numberPreffix": "$",
-					'yAxisMaxValue' : '100',
+					'yAxisMaxValue' : '10',
 					"canvasborderalpha": "0",
 					 "anchoralpha": "50",
 					"theme": "fint",
@@ -68,10 +75,10 @@
 				"categories": [
 					{
 						"category": [
-							{"label": "Bribery & Corruption"}, 
+							{"label": "ABC"}, 
 							{"label": "Territories"},
-							{"label": "Money laundering"},
-							{"label": "Fraud case"},
+							{"label": "AML"},
+							{"label": "Fraud"},
 							{"label": "FATCA"},
 						]
 					}
@@ -98,11 +105,11 @@
 		
 		//plot country value
 		//a.dataSource.dataset[0].seriesname =;
-		a.dataSource.dataset[0].data[0].value = <?php echo json_encode(((float)$output_array[0])*100, JSON_HEX_TAG); ?>;
-		a.dataSource.dataset[0].data[1].value = <?php echo json_encode(((float)$output_array[1])*100, JSON_HEX_TAG); ?>;
-		a.dataSource.dataset[0].data[2].value = <?php echo json_encode(((float)$output_array[2])*100, JSON_HEX_TAG); ?>;
-		a.dataSource.dataset[0].data[3].value = <?php echo json_encode(((float)$output_array[3])*100, JSON_HEX_TAG); ?>;
-		a.dataSource.dataset[0].data[4].value = <?php echo json_encode(((float)$output_array[4])*100, JSON_HEX_TAG); ?>;
+		a.dataSource.dataset[0].data[0].value = 1;
+		a.dataSource.dataset[0].data[1].value = 8.5;
+		a.dataSource.dataset[0].data[2].value = 7.7;
+		a.dataSource.dataset[0].data[3].value = 4.2;
+		a.dataSource.dataset[0].data[4].value = 2.1;
 		
 		var chart1 = new FusionCharts(a).render();
 		return false;
@@ -116,11 +123,22 @@
 
 
 <body>
-		
+	<div id="fb-root"></div>
+	<script>
+		(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) return;
+			js = d.createElement(s); js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+	</script>
+	
+	
 	<div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-left" style="display:none" id="mySidebar">
 		<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
 		<a class="w3-bar-item w3-button" href="http://www2.comp.polyu.edu.hk/~12059685d/">Main</a>
-		<a target="_blank" class="w3-bar-item w3-button" href="http://www2.comp.polyu.edu.hk/~12059685d/fintech/admin.php">Performance Report</a>
+		<a target="_blank" class="w3-bar-item w3-button" href="http://www2.comp.polyu.edu.hk/~12059685d/UserGuide.pdf">User Manual</a>
 	</div>
 	
 	<script>
@@ -186,6 +204,7 @@
 			<div class="w3-container">
 				<button type="button" class="w3-btn w3-blue" id="refresh" onclick="refresh()">Refresh</button>
 				<input type="button" class="w3-btn  w3-blue" id="send" value="Submit" onclick="drawchart()"/>
+				<input type="button" value="Open jar" onclick="summarize()" />
 				<br>
 			</div>
 			<br>
@@ -198,7 +217,10 @@
 			<div class="w3-container w3-center">
 				<div class="w3-padding-small" id="chart-container"></div>
 			</div>
-			
+			<div class="w3-container w3-display-container" id="countryDiffTitle">
+			</div>
+			<div class="w3-responsive" id="countryDiffList"></div>
+			<div class="w3-container w3-display-container" id="otherRegion">
 			</div>
 			<br>
 		</div>
